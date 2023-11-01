@@ -31,11 +31,6 @@ services:
   alertmanager:
     image: prom/alertmanager
     container_name: alertmanager
-    #volumes:
-    #  - ./alertmanager:/etc/alertmanager
-    #  - alertmanager_data:/data
-    #command:
-    #  - '--config.file=/etc/alertmanager/config.yml'
     restart: always
     ports:
       - 9093:9093
@@ -67,6 +62,19 @@ services:
       - mysql
     ports:
       - 9104:9104
+
+  redis:
+    image: redis:${REDIS_TAG}
+    container_name: redis
+    expose:
+      - '6379'
+
+  redis-exporter:
+    image: oliver006/redis_exporter:${REDIS_EXPORTER_TAG}
+    container_name: redis-exporter
+    command: -redis.addr redis://redis:6379
+    ports:
+      - 9121:9121
 
 volumes:
   mysql_data: 
