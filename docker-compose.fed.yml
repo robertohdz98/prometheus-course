@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+
+  # Federated, master Prometheus
+  prometheus-master:
+    image: prom/prometheus:${PROMETHEUS_TAG}
+    container_name: prometheus-master
+    volumes:
+      - ./prometheus/federation/prometheus-master.yml:/etc/prometheus/prometheus.yml  
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle
+    ports:
+      - 9099:9090
+
+  prometheus1:
+    image: prom/prometheus:${PROMETHEUS_TAG}
+    container_name: prometheus1
+    volumes:
+      - ./prometheus/federation/prometheus1.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle
+    ports:
+      - 9091:9090
+
+  prometheus2:
+    image: prom/prometheus:${PROMETHEUS_TAG}
+    container_name: prometheus2
+    volumes:
+      - ./prometheus/federation/prometheus2.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle
+    ports:
+      - 9092:9090
+  
+  mysql1:
+    image: mysql:${MYSQL_TAG}
+    container_name: mysql1
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=db
+      - MYSQL_USER=exp
+      - MYSQL_PASSWORD=1234
+    volumes:
+      - mysql1_vol:/var/lib/mysql
+    expose:
+      - '3306'
+
+  mysql2:
+    image: mysql:${MYSQL_TAG}
+    container_name: mysql2
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=db
+      - MYSQL_USER=exp
+      - MYSQL_PASSWORD=1234
+    volumes:
+      - mysql2_vol:/var/lib/mysql
+    expose:
+      - '3306'
+
+  mysqld-exporter1:
+    image: prom/mysqld-exporter:${MYSQL_EXPORTER_TAG}
+    container_name: mysqld-exporter1
+    volumes:
+      - ./mysqld-exporter/.my.cnf:/etc/.my.cnf
+    command:
+      - '--config.my-cnf=/etc/.my.cnf'
+    restart: always
+    depends_on:
+      - mysql1
+    ports:
+      - 9104:9104
+
+  mysqld-exporter2:
+    image: prom/mysqld-exporter:${MYSQL_EXPORTER_TAG}
+    container_name: mysqld-exporter2
+    volumes:
+      - ./mysqld-exporter/.my.cnf:/etc/.my.cnf
+    command:
+      - '--config.my-cnf=/etc/.my.cnf'
+    restart: always
+    depends_on:
+      - mysql2
+    ports:
+      - 9105:9104
+      
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_TAG}
+    container_name: node-exporter
+    restart: always
+    ports:
+      - 9100:9100
+
+volumes:
+  mysql1_vol:
+  mysql2_vol:

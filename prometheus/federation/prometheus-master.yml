@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # https://prometheus.io/docs/prometheus/latest/federation/
+  - job_name: federate
+    scrape_interval: 15s
+    honor_labels: true
+    metrics_path: '/federate'
+    params:
+      'match[]':
+      # This includes all jobs that start with "prometheus", i.e., 
+      # prometheus-master and prometeusN being N=1,2,...
+      - '{job=~"prometheus.*"}'
+      - '{__name__=~"job:.*"}'
+
+    static_configs:
+      - targets:
+        - prometheus1:9090
+        - prometheus2:9090
+      
+  - job_name: prometheus-master
+    static_configs:
+      - targets:
+        - prometheus-master:9090
+  
+  - job_name: node-exporter
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+        - node-exporter:9100
