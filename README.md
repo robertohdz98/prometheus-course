@@ -1,7 +1,13 @@
 # Prometheus
 
-This is a repository for several simple exercises about [**Prometheus**](https://prometheus.io/), an open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach. This is based on Technofor course for Prometheus Certified Associate (PCA) exam.
+This is a repository for several simple exercises about [**Prometheus**](https://prometheus.io/), an open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach. This is based on **Technofor course for Prometheus Certified Associate (PCA) exam**.
 
+It consists of several examples:
+- Environment based on Prometheus service with Grafana as visualization tool and additional services or exporters to be scraped by Prometheus
+- Managing alerts from Alertmanager (Prometheus) and Grafana
+- Prometheus federation, which allows a Prometheus server to scrape selected time series from another Prometheus server.
+
+<br/>
 
 ## 00. Simple Prometheus
 
@@ -9,6 +15,7 @@ In order to run a single Prometheus instance based on your own configuration, ju
 
 `docker run -d -p 9090:9090 -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus`
 
+<br/>
 
 ## 01. Prometheus environment
 
@@ -45,7 +52,15 @@ Once our Prometheus instance is linked with Grafana, we can create dashboards to
 
 #### 01.C Playing with alerts in Grafana
 
-Besides, Grafana and Prometheus allow to set personalized alerts (MS Teams, mail, etc.) according to several queries or events.
+Besides, Grafana and Prometheus allow to set personalized alerts (MS Teams, mail, etc.) according to several queries or events. In this lab, as an example, a simple alert is created for those cases when MySQL reaches a custom limit of client connections. This limit has been arbitrarily set to 2 clients (i.e., alert raises if a third client connects to MySQL). The alert is configured in a specific panel of the dashboard using PromQL (see screenshot below), and then it is needed to set an Alert Contact Point (e.g., MS Teams, e-mail, etc.) in "Alerting > Contact points" menu.
+
+<img width="760" alt="alert-mysql-clients" src="https://github.com/robertohdz98/prometheus-examples/assets/68640342/b1602334-e662-4f53-b463-c4c58aaec771">
+
+It is also possible to see that an alert has fired in the panel due to 3 connections:
+
+<img width="901" alt="Screenshot 2023-11-01 at 21 26 52" src="https://github.com/robertohdz98/prometheus-examples/assets/68640342/e8841077-4614-4e78-af7d-57e6bb486be4">
+
+<br/>
 
 ## 02. Prometheus federation
 
@@ -54,7 +69,7 @@ To recreate this environment, just launch:
 
 `docker-compose -f docker-compose.fed.yml --env-file .env up`
 
-This refers to another Prometheus environment where several services are created:
+This `docker-compose.fed.yml` file configures to another Prometheus environment where several services are created:
 
 - 2 isolated Prometheus instances `prometheus1` and  `prometheus2`, which are reachable at http://localhost:9091 and http://localhost:9092 respectively;
 
