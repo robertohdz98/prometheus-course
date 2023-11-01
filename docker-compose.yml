@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_TAG}
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=1d'
+    restart: always
+    ports:
+      - 9090:9090
+  
+  grafana:
+    image: grafana/grafana:${GRAFANA_TAG}
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_TAG}
+    container_name: node-exporter
+    restart: always
+    ports:
+      - 9100:9100
+      
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    #volumes:
+    #  - ./alertmanager:/etc/alertmanager
+    #  - alertmanager_data:/data
+    #command:
+    #  - '--config.file=/etc/alertmanager/config.yml'
+    restart: always
+    ports:
+      - 9093:9093
+
+  mysql:
+    # CREATE USER 'exp'@'%' IDENTIFIED BY '1234' WITH MAX_USER_CONNECTIONS 3;
+    # GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'exp'@'%';
+    image: mysql:${MYSQL_TAG}
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=db
+      - MYSQL_USER=exp
+      - MYSQL_PASSWORD=1234
+    volumes:
+      - mysql_data:/var/lib/mysql
+    expose:
+      - '3306'
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter:${MYSQL_EXPORTER_TAG}
+    container_name: mysqld-exporter
+    command:
+      - '--config.my-cnf=/etc/.my.cnf'
+    restart: always
+    volumes:
+      - ./mysqld-exporter/.my.cnf:/etc/.my.cnf
+    depends_on:
+      - mysql
+    ports:
+      - 9104:9104
+
+volumes:
+  mysql_data: 
