@@ -14,7 +14,7 @@ In order to run a single Prometheus instance based on your own configuration, ju
 
 In order to run all the defined services, just run:
 
-`docker-compose --env-file .env up`
+`docker-compose -f docker-compose.yml --env-file .env up`
 
 An .env file is also provided to set the image tags (please check for compatibility).
 
@@ -29,6 +29,7 @@ Several services are then launched:
 - **MySQL Exporter**, reachable at http://localhost:9104, whose config file with credentials is set in *mysqld-exporter/* dir in order to avoid passing credentials as environment variables;
 - **Alertmanager**, reachable at http://localhost:9093;
 - **Node Exporter**, reachable at http://localhost:9100.
+- Other additional services can be included, such as Redis and its associated Redis Exporter (reachable at http://localhost:9121).
 
 ### 01.A Add Prometheus as data source in Grafana
 
@@ -41,3 +42,32 @@ Once our environment is set up, our goal is to connect Prometheus and Grafana in
 Once our Prometheus instance is linked with Grafana, we can create dashboards to visualize Prometheus scraping metrics and monitor Prometheus scraped services, such as MySQL instance. To this end, our starting point is [an already created and publicly available dashboard for MySQL](https://grafana.com/grafana/dashboards/14031-mysql-dashboard/). In Grafana, click "Home > Dashboards > Import" > Copy Dashboard ID (e.g., 14031 in this case) and Load dashboard, where you can further personalize your panels.
 
 ![mysql-dashboard](/figures/grafana-mysql-dashboard.png)
+
+#### 01.C Playing with alerts in Grafana
+
+Besides, Grafana and Prometheus allow to set personalized alerts (MS Teams, mail, etc.) according to several queries or events.
+
+## 02. Prometheus federation
+
+Federation allows a Prometheus server to scrape selected time series from another Prometheus server.
+To recreate this environment, just launch:
+
+`docker-compose -f docker-compose.fed.yml --env-file .env up`
+
+This refers to another Prometheus environment where several services are created:
+
+- 2 isolated Prometheus instances `prometheus1` and  `prometheus2`, which are reachable at http://localhost:9091 and http://localhost:9092 respectively;
+
+![federate-1](/figures/federate-1.png)
+![federate-2](/figures/federate-2.png)
+
+- 2 MySQL servers and 2 MySQL exporters, one for each isolated Prometheus (see them as targets in screenshots above);
+- A "master" Prometheus instance which gathers and collects metrics from those federated Prometheus and their respective scraped services, reachable at http://localhost:9099 (see screenshot of its targets below);
+
+![federate-master](/figures/federate-master.png)
+
+- Node Exporter as an additional service that could be included.
+
+As a result, **all metrics could be gathered and monitored from a single Prometheus instance**:
+
+![federate-all](/figures/federate-all.png)
