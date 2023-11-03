@@ -50,6 +50,10 @@ Once our Prometheus instance is linked with Grafana, we can create dashboards to
 
 ![mysql-dashboard](/figures/grafana-mysql-dashboard.png)
 
+Besides, we could have several dashboards to monitor different services. Here, a dashboard for Redis based on Redis Exporter is created (ID 673):
+
+![mysql-dashboard](https://github.com/robertohdz98/prometheus-certification-course/assets/68640342/bdb9d0dc-b2ab-4219-b580-6b77111d499c)
+
 #### 01.C Playing with alerts in Grafana
 
 Besides, Grafana and Prometheus allow to set personalized alerts (MS Teams, mail, etc.) according to several queries or events. In this lab, as an example, a simple alert is created for those cases when MySQL reaches a custom limit of client connections. This limit has been arbitrarily set to 2 clients (i.e., alert raises if a third client connects to MySQL). The alert is configured in a specific panel of the dashboard using PromQL (see screenshot below), and then it is needed to set an Alert Contact Point (e.g., MS Teams, e-mail, etc.) in "Alerting > Contact points" menu.
