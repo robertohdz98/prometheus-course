@@ -4,6 +4,7 @@ This is a repository for several simple exercises about [**Prometheus**](https:/
 
 It consists of several examples:
 - Environment based on Prometheus service with Grafana as visualization tool and additional services or exporters to be scraped by Prometheus
+- Several Grafana Dashboards for MySQL, Redis, Node Exporter... monitoring (using **PromQL**)
 - Managing alerts from Alertmanager (Prometheus) and Grafana
 - Prometheus federation, which allows a Prometheus server to scrape selected time series from another Prometheus server.
 
@@ -38,21 +39,33 @@ Several services are then launched:
 - **Node Exporter**, reachable at http://localhost:9100.
 - Other additional services can be included, such as Redis and its associated Redis Exporter (reachable at http://localhost:9121).
 
+<br/>
+
 ### 01.A Add Prometheus as data source in Grafana
 
 Once our environment is set up, our goal is to connect Prometheus and Grafana in order to use this latter one to monitor our systems due to its more powerful visualization capabilities. To this end, access to our Grafana instance, change the default password and add our Prometheus instance as data source in "Home > Connections > Data Sources > Add data source > Prometheus" and type our Prometheus instance location `http://prometheus:9090`.
 
 ![DataSource](/figures/prom-grafana-datasource.png)
 
-#### 01.B Our first dashboard in Grafana
+<br/>
 
-Once our Prometheus instance is linked with Grafana, we can create dashboards to visualize Prometheus scraping metrics and monitor Prometheus scraped services, such as MySQL instance. To this end, our starting point is [an already created and publicly available dashboard for MySQL](https://grafana.com/grafana/dashboards/14031-mysql-dashboard/). In Grafana, click "Home > Dashboards > Import" > Copy Dashboard ID (e.g., 14031 in this case) and Load dashboard, where you can further personalize your panels.
+#### 01.B Our first dashboards in Grafana
+
+Once our Prometheus instance is linked with Grafana, we can create dashboards to visualize Prometheus scraping metrics and monitor Prometheus scraped services, such as MySQL instance. To this end, our starting point is [an already created and publicly available **dashboard for MySQL**](https://grafana.com/grafana/dashboards/14031-mysql-dashboard/). In Grafana, click "Home > Dashboards > Import" > Copy Dashboard ID (e.g., 14031 in this case) and Load dashboard, where you can further personalize your panels.
 
 ![mysql-dashboard](/figures/grafana-mysql-dashboard.png)
 
-Besides, we could have several dashboards to monitor different services. Here, a dashboard for Redis based on Redis Exporter is created (ID 673):
+Besides, we could have several dashboards to monitor different services. Here, **a dashboard for Redis based on Redis Exporter** is created (ID 673):
 
-![mysql-dashboard](https://github.com/robertohdz98/prometheus-certification-course/assets/68640342/bdb9d0dc-b2ab-4219-b580-6b77111d499c)
+![redis-dashboard](https://github.com/robertohdz98/prometheus-certification-course/assets/68640342/bdb9d0dc-b2ab-4219-b580-6b77111d499c)
+
+In this mini-project for the course, a custom, simple dashboard (whose JSON is located in `grafana/node-exporter-dashboard.json` in this repo) has been created for some metrics scraped **using Prometheus and Node Exporter** through PromQL queries.
+
+For example, the "Memory Usage Percentage" panel in the right shows the percentage of memory usage of the host (PromQL query: `100 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100`). In this specific panel, some custom thresholds as filled regions have been designed to easily visualize when a lot of tasks are being performed and when the memory is filling up (could add alerts here!):
+
+![node-exporter-dashboard](/figures/my-node-exporter-dashboard.png)
+
+<br/>
 
 #### 01.C Playing with alerts in Grafana
 
