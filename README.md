@@ -3,10 +3,10 @@
 This is a repository for several simple exercises about [**Prometheus**](https://prometheus.io/), an open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach. This is based on **Technofor course for Prometheus Certified Associate (PCA) exam**.
 
 It consists of several examples:
-- Environment based on Prometheus service with Grafana as visualization tool and additional services or exporters to be scraped by Prometheus
-- Several Grafana Dashboards for MySQL, Redis, Node Exporter... monitoring (using **PromQL**)
-- Managing alerts from Alertmanager (Prometheus) and Grafana
-- Prometheus federation, which allows a Prometheus server to scrape selected time series from another Prometheus server.
+- **Environment based on Prometheus** service with Grafana as visualization tool and additional services or exporters to be scraped by Prometheus
+- Several **Grafana Dashboards** for MySQL, Redis, Node Exporter... monitoring (using **PromQL**)
+- Managing alerts from **Alertmanager** (Prometheus) and Grafana
+- **Prometheus federation**, which allows a Prometheus server to scrape selected time series from another Prometheus server.
 
 <br/>
 
@@ -59,11 +59,15 @@ Besides, we could have several dashboards to monitor different services. Here, *
 
 ![redis-dashboard](https://github.com/robertohdz98/prometheus-certification-course/assets/68640342/bdb9d0dc-b2ab-4219-b580-6b77111d499c)
 
-In this mini-project for the course, a custom, simple dashboard (whose JSON is located in `grafana/node-exporter-dashboard.json` in this repo) has been created for some metrics scraped **using Prometheus and Node Exporter** through PromQL queries.
+Another Grafana **dashboard based on Node Exporter** (ID 1860):
+
+![node-exporter-dashboard](https://github.com/robertohdz98/prometheus-certification-course/assets/68640342/b8e6c3fb-6fc5-46b9-973b-5de0f3861ba2)
+
+But, additionally and as an alternative to this latest dashboard, in this mini-project for the course a custom, more simple dashboard (whose JSON is located in `grafana/node-exporter-dashboard.json` in this repo) has been created for some metrics scraped **using Prometheus and Node Exporter** through PromQL queries.
 
 For example, the "Memory Usage Percentage" panel in the right shows the percentage of memory usage of the host (PromQL query: `100 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100`). In this specific panel, some custom thresholds as filled regions have been designed to easily visualize when a lot of tasks are being performed and when the memory is filling up (could add alerts here!):
 
-![node-exporter-dashboard](/figures/my-node-exporter-dashboard.png)
+![my-node-exporter-dashboard](/figures/my-node-exporter-dashboard.png)
 
 <br/>
 
