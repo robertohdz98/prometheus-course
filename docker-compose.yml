@@ -80,6 +80,16 @@ services:
     depends_on:
       - redis
 
+  blackbox-exporter:
+    image: prom/blackbox-exporter:${BLACKBOX_EXPORTER_TAG}
+    container_name: blackbox-exporter
+    volumes:
+      - ./blackbox-exporter/blackbox.yml:/etc/blackbox/blackbox.yml
+    command:
+      - '--config.file=/etc/blackbox/blackbox.yml'
+    ports:
+      - 9115:9115
+
 volumes:
   mysql_data:
   grafana_vol:
