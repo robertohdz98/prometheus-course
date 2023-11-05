@@ -7,8 +7,10 @@ alerting:
     - static_configs:
       - targets: ['alertmanager:9093']
 
-scrape_configs:
+rule_files:
+  - alerts.yml
 
+scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets: ['prometheus:9090']
@@ -41,7 +43,7 @@ scrape_configs:
     static_configs:
       - targets: ['redis-exporter:9121']
 
-  - job_name: 'blackbox'
+  - job_name: blackbox
     metrics_path: /probe
     params:
       module: ['http_2xx'] # Look for a HTTP 200 response.
@@ -58,6 +60,6 @@ scrape_configs:
       - target_label: __address__
         replacement: blackbox-exporter:9115
         
-  - job_name: 'blackbox-exporter' #blackbox exporter itself
+  - job_name: blackbox-exporter #blackbox exporter itself
     static_configs:
       - targets: ['blackbox-exporter:9115']

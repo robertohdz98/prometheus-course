@@ -1,24 +1,40 @@
 # Prometheus
 
-This is a repository for several simple exercises about [**Prometheus**](https://prometheus.io/), an open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach. This is based on **Technofor course for Prometheus Certified Associate (PCA) exam**.
+This is a repository for several simple exercises about [**Prometheus**](https://prometheus.io/), an open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach. It is based on **Technofor course for Prometheus Certified Associate (PCA) exam**.
 
-It consists of several examples:
-- **Environment based on Prometheus** service with Grafana as visualization tool and additional services or exporters to be scraped by Prometheus
-- Several **Grafana Dashboards** for MySQL, Redis, Node Exporter... monitoring (using **PromQL**)
+This Prometheus repo consists of:
+- **Environment based on Prometheus** service using `docker-compose` to create several services or targets to be scraped by Prometheus
+- Configuring several **Prometheus exporters**
+- **Leveraging Grafana's powerful visualization capabilities**, linking it with Prometheus to create dashboards for MySQL, Redis, Node Exporter... monitoring (using **PromQL**)
 - Managing alerts from **Alertmanager** (Prometheus) and Grafana
 - **Prometheus federation**, which allows a Prometheus server to scrape selected time series from another Prometheus server.
 
 <br/>
 
-## 00. Simple Prometheus
+# Table of Contents
+[00. Simple Prometheus](#00-simple-prometheus)
+
+[01. Prometheus environment](#01-prometheus-environment)
+- [01.A Add Prometheus as data source in Grafana](#01.A-add-prometheus-as-data-source-in-grafana)
+- [01.B Our first dashboards in Grafana](#01.B-our-first-dashboards-in-grafana)
+- [01.C Alerts in Grafana](#01.C-playing-with-alerts-in-grafana)
+- [01.D Alerts in Prometheus and Alertmanager](#01.D-playing-with-alerts-in-prometheus-and-alertmanager)
+
+[02. Prometheus federation](#02-prometheus-federation)
+
+<br/>
+<br/>
+
+# 00. Simple Prometheus
 
 In order to run a single Prometheus instance based on your own configuration, just set your Prometheus scrape configs, jobs and config in a `prometheus.yml` file and then mount it as a volume.
 
 `docker run -d -p 9090:9090 -v ./prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus`
 
 <br/>
+<br/>
 
-## 01. Prometheus environment
+# 01. Prometheus environment
 
 In order to run all the defined services, just run:
 
@@ -37,11 +53,12 @@ Several services are then launched:
 - **MySQL Exporter**, reachable at http://localhost:9104, whose config file with credentials is set in *mysqld-exporter/* dir in order to avoid passing credentials as environment variables;
 - **Alertmanager**, reachable at http://localhost:9093;
 - **Node Exporter**, reachable at http://localhost:9100.
-- Other additional services can be included, such as Redis and its associated Redis Exporter (reachable at http://localhost:9121).
+- **Redis** and its associated **Redis Exporter** (reachable at http://localhost:9121)
+- Other additional services can be included, such as Blackbox Exporter (reachable at http://localhost:9115).
 
 <br/>
 
-### 01.A Add Prometheus as data source in Grafana
+## 01.A Add Prometheus as data source in Grafana
 
 Once our environment is set up, our goal is to connect Prometheus and Grafana in order to use this latter one to monitor our systems due to its more powerful visualization capabilities. To this end, access to our Grafana instance, change the default password and add our Prometheus instance as data source in "Home > Connections > Data Sources > Add data source > Prometheus" and type our Prometheus instance location `http://prometheus:9090`.
 
@@ -49,7 +66,7 @@ Once our environment is set up, our goal is to connect Prometheus and Grafana in
 
 <br/>
 
-#### 01.B Our first dashboards in Grafana
+### 01.B Our first dashboards in Grafana
 
 Once our Prometheus instance is linked with Grafana, we can create dashboards to visualize Prometheus scraping metrics and monitor Prometheus scraped services, such as MySQL instance. To this end, our starting point is [an already created and publicly available **dashboard for MySQL**](https://grafana.com/grafana/dashboards/14031-mysql-dashboard/). In Grafana, click "Home > Dashboards > Import" > Copy Dashboard ID (e.g., 14031 in this case) and Load dashboard, where you can further personalize your panels.
 
@@ -71,9 +88,9 @@ For example, the "Memory Usage Percentage" panel in the right shows the percenta
 
 <br/>
 
-#### 01.C Playing with alerts in Grafana
+### 01.C Playing with alerts in Grafana
 
-Besides, Grafana and Prometheus allow to set personalized alerts (MS Teams, mail, etc.) according to several queries or events. In this lab, as an example, a simple alert is created for those cases when MySQL reaches a custom limit of client connections. This limit has been arbitrarily set to 2 clients (i.e., alert raises if a third client connects to MySQL). The alert is configured in a specific panel of the dashboard using PromQL (see screenshot below), and then it is needed to set an Alert Contact Point (e.g., MS Teams, e-mail, etc.) in "Alerting > Contact points" menu.
+Besides, Grafana and Prometheus allow to set personalized alerts (MS Teams, mail, etc.) according to several queries or events. In this lab, as an example, a simple alert is created in Grafana for those cases when MySQL reaches a custom limit of client connections. This limit has been arbitrarily set to 2 clients (i.e., alert raises if a third client connects to MySQL). The alert is configured in a specific panel of the dashboard using PromQL (see screenshot below), and then it is needed to set an Alert Contact Point (e.g., MS Teams, e-mail, etc.) in "Alerting > Contact points" menu.
 
 <img width="760" alt="alert-mysql-clients" src="https://github.com/robertohdz98/prometheus-examples/assets/68640342/b1602334-e662-4f53-b463-c4c58aaec771">
 
@@ -83,7 +100,21 @@ It is also possible to see that an alert has fired in the panel due to 3 connect
 
 <br/>
 
-## 02. Prometheus federation
+### 01.D Playing with alerts in Prometheus and Alertmanager
+
+Similarly, Prometheus can also set alerts based on events or changes in the state of its scraped services with the help of **Alertmanager**. There are two steps here:
+
+- Firstly, **defining the rules based on queries that will trigger the alerts**. This is possible by configuring the alert rules in a .yml file (here `prometheus/alerts.yml`) and then referencing those rules
+from the Prometheus configuration file using `rule_files` flag. The configured alerts can be visualized in "Alerts" from the Prometheus UI.
+
+![alerts-prometheus](https://github.com/robertohdz98/prometheus-certification-course/assets/68640342/17dcf687-03d8-4d61-9cdb-73746e717999)
+
+- Secondly, **managing those alerts**. Prometheus itself does not handle alerts, it only sets those alerts and trusts on **Alertmanager** for these "warning" tasks (Grafana is able to do both).
+
+<br/>
+<br/>
+
+# 02. Prometheus federation
 
 Federation allows a Prometheus server to scrape selected time series from another Prometheus server.
 To recreate this environment, just launch:

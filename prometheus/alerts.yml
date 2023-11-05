@@ -1,0 +1,9 @@
+groups:
+  - name: alerts
+    rules:
+      - alert: Grafana Down
+        expr: up{job="grafana"} == 0
+
+      - alert: Any of the Exporters Down
+        expr: up{job=~".*-exporter"} == 0
+    
