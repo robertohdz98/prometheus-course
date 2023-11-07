@@ -91,6 +91,13 @@ services:
     ports:
       - 9115:9115
 
+  python-app-custom:
+    image: python-app
+    container_name: python-app-custom
+    ports:
+      - 8000:8000
+      - 8001:8001
+
 volumes:
   mysql_data:
   grafana_vol:
