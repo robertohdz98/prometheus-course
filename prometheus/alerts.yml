@@ -3,7 +3,33 @@ groups:
     rules:
       - alert: Grafana Down
         expr: up{job="grafana"} == 0
+        for: 2m
+        labels:
+          severity: critical
 
       - alert: Any of the Exporters Down
         expr: up{job=~".*-exporter"} == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus target missing (instance {{ $labels.instance }})
+          description: "Exporter {{ $labels.instance }} is down! "
+
+      # Record rule to extract info about our app, and its associated alert rules
+      - record: job:app_response_latency_seconds:rate1m
+        expr: rate(app_response_latency_seconds_sum[1m]) / rate(app_response_latency_seconds_count[1m])
+
+      - alert: Python App latency extremely high
+        expr: job:app_response_latency_seconds:rate1m >= 5 
+        for: 1m
+        labels:
+          severity: critical
+
+      - alert: Python App latency high
+        expr: 3 < (job:app_response_latency_seconds:rate1m) < 5 
+        for: 1m
+        labels:
+          severity: warning
+      
     
