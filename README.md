@@ -8,6 +8,7 @@ This Prometheus repo consists of:
 - **Leveraging Grafana's powerful visualization capabilities**, linking it with Prometheus to create dashboards for MySQL, Redis, Node Exporter... monitoring (using **PromQL**)
 - Managing alerts from **Alertmanager** (Prometheus) and Grafana
 - **Prometheus federation**, which allows a Prometheus server to scrape selected time series from another Prometheus server.
+- **Prometheus & Grafana stack** manifest files for deployment in **Kubernetes** (`/k8s-deployment`).
 
 <br/>
 
