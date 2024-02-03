@@ -2,6 +2,8 @@
 
 This is a repository for several simple exercises about [**Prometheus**](https://prometheus.io/), an open-source monitoring system with a dimensional data model, flexible query language, efficient time series database and modern alerting approach. It is based on **Technofor course for Prometheus Certified Associate (PCA) exam**.
 
+[Link to PCA Certification](https://ti-user-certificates.s3.amazonaws.com/e0df7fbf-a057-42af-8a1f-590912be5460/578a4927-7b3e-42cd-80f1-4fa015563c94-roberto-hernandez-ruiz-c92fde45-2216-48b5-a58c-9e1f37fdf30c-certificate.pdf)
+
 This Prometheus repo consists of:
 - **Environment based on Prometheus** service using `docker-compose` to create several services or targets to be scraped by Prometheus
 - Configuring several **Prometheus exporters**
